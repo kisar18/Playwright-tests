@@ -1,19 +1,16 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('iDoklad sign up', async ({ page }) => {
-  await page.goto('https://www.idoklad.cz/');
-
-  // Decline cookies
-  await page.getByRole('button', { name: 'Reject all' }).click();
-
-  await page.getByRole('link', { name: 'Vyzkoušejte zdarma' }).click();
+test("iDoklad sign up", async ({ page }) => {
+  await page.goto("https://app.idoklad.cz/Account/Registration");
 
   // Title check
   await expect(page).toHaveTitle("Registrace");
 
-  await page.getByRole('button', { name: 'Vstupte zdarma' }).click();
+  await page.getByRole("button", { name: "Vstupte zdarma" }).click();
 
-  const lastErrorMessage = page.locator('.errors-wrapper > div[data-ui-id="csw-error-message"]').last();
+  const lastErrorMessage = page
+    .locator('.errors-wrapper > div[data-ui-id="csw-error-message"]')
+    .last();
 
   // Email tests
   await expect(lastErrorMessage).toHaveText(/E-mailová adresa/);
@@ -69,8 +66,9 @@ test('iDoklad sign up', async ({ page }) => {
   await page.locator('[name="IdentificationNumber"]').fill("@&|");
   await expect(lastErrorMessage).toHaveText(/IČ/);
 
-  const checkbox = page.locator('.switch-wrapper input[type="checkbox"]');
+  const checkbox = page.locator(
+    '.switch-wrapper > span > span > input[type="checkbox"]'
+  );
   await checkbox.check();
   await expect(lastErrorMessage).not.toBeVisible();
-
 });
