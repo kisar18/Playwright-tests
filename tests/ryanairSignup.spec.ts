@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import domData from '../fixtures/testFixture.json';
 
 /*
   Commands to run the tests:
@@ -18,58 +19,63 @@ test("Ryanair sign-up", async ({ page }) => {
   await page.goto("https://www.ryanair.com/cz/cs");
 
   // Decline cookies
-  await page.getByRole("button", { name: "Ne, děkuji" }).click();
+  await page.getByRole("button", { name: domData.declineCookies }).click();
 
   // Title check
-  await expect(page).toHaveTitle(
-    "Oficiální internetové stránky Ryanair | Levné lety | Exkluzivní nabídka"
-  );
+  await expect(page).toHaveTitle(domData.title);
 
   await page.getByRole("button", { name: " Přihlásit se " }).click();
 
   // Open sign-up window
   const iframe = page.frameLocator('iframe[data-ref="kyc-iframe"]');
   await iframe.locator('button[data-ref="signup_login_signup"]').click();
-  await expect(iframe.locator('text=" Vytvořit účet "')).toBeVisible();
+  const createAccountBtn = iframe.locator('text=" Vytvořit účet "')
+  await expect(createAccountBtn).toBeVisible();
 
   // Empty fields
-  await iframe.locator('button[type="submit"]').click();
-  await expect(iframe.locator('text="Je třeba uvést e-mail"')).toBeVisible();
-  await expect(iframe.locator('text="Je vyžadováno heslo"')).toBeVisible();
+  const emailValidation = iframe.locator('ry-input-d[name="email"] > span').first();
+  const passwordValidation = iframe.locator('ry-input-d[name="password"] > span').first();
+  await createAccountBtn.click();
+  await expect(emailValidation).toBeVisible();
+  await expect(emailValidation).toHaveText(domData.requiredEmail);
+  await expect(passwordValidation).toBeVisible();
+  await expect(passwordValidation).toHaveText(domData.requiredPassword);
 
   // Testing email field
-  await iframe.locator('input[name="email"]').fill("email");
-  await iframe.locator('button[type="submit"]').click();
-  await expect(iframe.locator('text="Neplatný formát e-mailové adresy"')).toBeVisible();
-  await expect(iframe.locator('text="Je vyžadováno heslo"')).toBeVisible();
+  const emailField = iframe.locator('input[name="email"]')
+  await emailField.fill("email");
+  await createAccountBtn.click();
+  await expect(emailValidation).toBeVisible();
+  await expect(emailValidation).toHaveText(domData.invalidEmail);
 
-  await iframe.locator('input[name="email"]').fill("email@email");
-  await iframe.locator('button[type="submit"]').click();
-  await expect(iframe.locator('text="Neplatný formát e-mailové adresy"')).toBeVisible();
-  await expect(iframe.locator('text="Je vyžadováno heslo"')).toBeVisible();
+  await emailField.fill("email@email");
+  await createAccountBtn.click();
+  await expect(emailValidation).toBeVisible();
+  await expect(emailValidation).toHaveText(domData.invalidEmail);
 
-  await iframe.locator('input[name="email"]').fill("email.email");
-  await iframe.locator('button[type="submit"]').click();
-  await expect(iframe.locator('text="Neplatný formát e-mailové adresy"')).toBeVisible();
-  await expect(iframe.locator('text="Je vyžadováno heslo"')).toBeVisible();
+  await emailField.fill("email.email");
+  await createAccountBtn.click();
+  await expect(emailValidation).toBeVisible();
+  await expect(emailValidation).toHaveText(domData.invalidEmail);
 
-  await iframe.locator('input[name="email"]').fill("Ema1l@l1amE.com");
-  await iframe.locator('button[type="submit"]').click();
-  await expect(iframe.locator('text="Neplatný formát e-mailové adresy"')).not.toBeVisible();
-  await expect(iframe.locator('text="Je vyžadováno heslo"')).toBeVisible();
+  await emailField.fill("Ema1l@l1amE.com");
+  await createAccountBtn.click();
+  await expect(emailValidation).not.toBeVisible();
 
   // Testing password field
-  await iframe.locator('input[name="password"]').fill("passwd");
-  await iframe.locator('button[type="submit"]').click();
-  await expect(iframe.locator('text="Neplatný formát e-mailové adresy"')).not.toBeVisible();
-  await expect(iframe.locator('text="Je vyžadováno heslo"')).not.toBeVisible();
+  const passwordField = iframe.locator('input[name="password"]')
+  await passwordField.fill("passwd")
+  await createAccountBtn.click();
+  await expect(passwordValidation).not.toBeVisible();
 
-  // Validation for at least one number
-  await expect(iframe.locator('ry-auth-password-validation > :nth-child(3) > :nth-child(1) > :nth-child(1)')).toHaveClass('icon--error')
-  // Validation for at least 8 characters
-  await expect(iframe.locator('ry-auth-password-validation > :nth-child(4) > :nth-child(1) > :nth-child(1)')).toHaveClass('icon--error')
-  // Validation for at least one small letter
-  await expect(iframe.locator('ry-auth-password-validation > :nth-child(5) > :nth-child(1) > :nth-child(1)')).toHaveClass('icon--success')
-  // Validation for at least one big letter
-  await expect(iframe.locator('ry-auth-password-validation > :nth-child(6) > :nth-child(1) > :nth-child(1)')).toHaveClass('icon--error')
+  // Password requirements
+  const oneNumberValidation = iframe.locator('ry-auth-password-validation > :nth-child(3) > :nth-child(1) > :nth-child(1)')
+  const eightCharactersValidation = iframe.locator('ry-auth-password-validation > :nth-child(4) > :nth-child(1) > :nth-child(1)')
+  const oneSmallLetterValidation = iframe.locator('ry-auth-password-validation > :nth-child(5) > :nth-child(1) > :nth-child(1)')
+  const oneBigLetterValidation = iframe.locator('ry-auth-password-validation > :nth-child(6) > :nth-child(1) > :nth-child(1)')
+
+  await expect(oneNumberValidation).toHaveClass('icon--error')
+  await expect(eightCharactersValidation).toHaveClass('icon--error')
+  await expect(oneSmallLetterValidation).toHaveClass('icon--success')
+  await expect(oneBigLetterValidation).toHaveClass('icon--error')
 });
