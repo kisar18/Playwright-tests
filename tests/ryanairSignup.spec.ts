@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import domData from '../fixtures/testFixture.json';
+import domData from '../fixtures/ryanairFixtures.json';
 
 /*
   Commands to run the tests:
@@ -16,7 +16,7 @@ import domData from '../fixtures/testFixture.json';
 */
 
 test("Ryanair sign-up", async ({ page }) => {
-  await page.goto("https://www.ryanair.com/cz/cs");
+  await page.goto(domData.ryanairUrl);
 
   // Decline cookies
   await page.getByRole("button", { name: domData.declineCookies }).click();
