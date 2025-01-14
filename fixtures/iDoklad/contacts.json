@@ -1,0 +1,47 @@
+[
+  {
+    "countrySearchValue": "špa",
+    "country": "Španělsko",
+    "name": "Sala gold",
+    "identificationNumber": "2712022",
+    "city": "Málaga",
+    "street": "Navarro Ledesma",
+    "postalCode": 29010
+  },
+  {
+    "countrySearchValue": "řec",
+    "country": "Řecko",
+    "name": "Fredo capuchino",
+    "identificationNumber": "82972",
+    "city": "Thessaloniki",
+    "street": "Tsimiski",
+    "postalCode": 54248
+  },
+  {
+    "countrySearchValue": "maď",
+    "country": "Maďarsko",
+    "name": "Guláš",
+    "identificationNumber": "2983",
+    "city": "Budapest",
+    "street": "Vaci",
+    "postalCode": 1021
+  },
+  {
+    "countrySearchValue": "fra",
+    "country": "Francie",
+    "name": "Pancake",
+    "identificationNumber": "6781",
+    "city": "Nantes",
+    "street": "Montmarte",
+    "postalCode": 44000
+  },
+  {
+    "countrySearchValue": "mar",
+    "country": "Maroko",
+    "name": "Gold dessert",
+    "identificationNumber": "1397",
+    "city": "Tanger",
+    "street": "Rue Annidal",
+    "postalCode": 90040
+  }
+]
