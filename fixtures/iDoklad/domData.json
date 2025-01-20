@@ -1,5 +1,6 @@
 {
   "contactAdded": "přidán",
   "contactEdited": "změněn",
-  "contactDeleted": "smazán"
+  "contactDeleted": "smazán",
+  "saveDuplicateContact": "Přesto uložit"
 }
