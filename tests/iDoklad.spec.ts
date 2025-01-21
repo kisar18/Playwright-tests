@@ -83,3 +83,74 @@ test('Create contact', async ({ page, getByDataUiId }) => {
   await expect(toastMessage).toBeVisible()
   await expect(toastMessage).toContainText(contacts[0].name)
 })
+
+test('Edit the first contact', async ({ page, addEmptyContact, getByDataUiId }) => {
+  // Go to contacts list
+  await page.route('**/api/Contact/IndexData', route => {
+    route.continue()
+  })
+  const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
+  const sideMenu = await getByDataUiId('csw-side-menu-address-book')
+  await expect(sideMenu).toBeVisible()
+  await sideMenu.click()
+  await contactsPageLoad
+
+  // Check if there is atleast one existing contact
+  const body = page.locator('body')
+  const hasEmptyListButton = await body.locator('button[data-ui-id="csw-empty-list-new-item"]').count()
+
+  if (hasEmptyListButton > 0) {
+    await addEmptyContact(contacts[0])
+  }
+
+  // Edit contact
+  const contactsTable = page.locator('.k-grid-container > div > div > table[role="presentation"]')
+  await expect(contactsTable).toBeVisible()
+  const selectedContact = contactsTable.locator('tr').first()
+  await expect(selectedContact).toBeVisible()
+
+  const editButton = await selectedContact.locator('[data-ui-id="csw-row-action-edit"]')
+  await expect(editButton).toBeVisible()
+  await editButton.click()
+
+  const countryButton = page.locator('[name="CountryId"]').locator('..').locator('button')
+  await expect(countryButton).toBeVisible()
+  await countryButton.click()
+
+  const countrySearch = page.locator('.k-list-filter > span > .k-input-inner')
+  await expect(countrySearch).toBeVisible()
+  await countrySearch.fill(contacts[1].countrySearchValue)
+
+  const targetCountry = page.locator('ul[role="listbox"]').locator('li')
+  await expect(targetCountry).toHaveCount(1)
+  await expect(targetCountry).toContainText(contacts[1].country)
+  await targetCountry.click()
+
+
+  const fillField = async (selector: string, value: string) => {
+    const field = page.locator(selector)
+    await expect(field).toBeVisible()
+    await field.clear()
+    await field.fill(value)
+  }
+
+  await fillField('[name="CompanyName"]', contacts[1].name)
+  await fillField('[name="IdentificationNumber"]', contacts[1].identificationNumber)
+  await fillField('[name="Street"]', contacts[1].street)
+  await fillField('[name="PostalCode"]', (contacts[1].postalCode).toString())
+  await fillField('[name="City"]', contacts[1].city)
+
+  // Save contact
+  const saveContactButton = await getByDataUiId('csw-save-new-contact')
+  await expect(saveContactButton).toBeVisible()
+  await page.route('**/api/Contact/Update', route => route.continue())
+  const saveContactRequest = page.waitForResponse('**/api/Contact/Update')
+  await saveContactButton.click()
+  await saveContactRequest
+
+  const errorsWrapper = page.locator('.errors-wrapper')
+  await expect(errorsWrapper).not.toBeVisible()
+  const toastMessage = await getByDataUiId('csw-toast-message')
+  await expect(toastMessage).toBeVisible()
+  await expect(toastMessage).toContainText(domData.contactEdited)
+})
