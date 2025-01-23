@@ -5,6 +5,7 @@ import domData from '../fixtures/iDoklad/domData.json'
 import searchData from '../fixtures/iDoklad/searchData.json'
 
 // npx playwright codegen https://app.idoklad.cz/Account/Login - debug selectors
+// npx playwright test iDoklad.spec.ts --project=chromium --workers=1
 
 test.beforeEach('Login with valid credentials and block Clarity requests', async ({ login, page }) => {
   await page.route('https://www.clarity.ms/**', (route) => {
