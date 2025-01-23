@@ -66,11 +66,23 @@ export const test = baseTest.extend({
 
       const errorsWrapper = page.locator('.errors-wrapper')
       await expect(errorsWrapper).not.toBeVisible()
-      const toastMessage = getByDataUiId('csw-toast-message')
+      const toastMessage = getByDataUiId('csw-toast-message').first()
       await expect(toastMessage).toBeVisible()
       await expect(toastMessage).toContainText(contact.name)
     })
   },
+
+  addContactIfNotPresent: async ({ addEmptyContact, getByDataUiId }, use) => {
+    await use(async (contact: Contact) => {
+      const existingContacts = await getByDataUiId('csw-company-name').evaluateAll((rows) => 
+        rows.map(row => row.textContent.trim())
+      )
+
+      if (!existingContacts.includes(contact.name)) {
+          await addEmptyContact(contact)
+      }
+    }
+  )}
 })
 
 export const expect = test.expect
