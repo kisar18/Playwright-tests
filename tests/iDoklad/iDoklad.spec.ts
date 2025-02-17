@@ -271,7 +271,7 @@ test('Filter contacts', async ({ page, addEmptyContact, getByDataUiId, addContac
       return elements.map(el => (el.textContent || '').trim())
   })
 
-  const sortedAtoZ = [...contactsAtoZ].sort().reverse()
+  const sortedAtoZ = [...contactsAtoZ].sort()
   expect(contactsAtoZ).toEqual(sortedAtoZ)
 
   // Z to A sorting
@@ -281,6 +281,6 @@ test('Filter contacts', async ({ page, addEmptyContact, getByDataUiId, addContac
       return elements.map(el => (el.textContent || '').trim())
   })
 
-  const sortedZtoA = [...contactsZtoA].sort()
+  const sortedZtoA = [...contactsZtoA].sort().reverse()
   expect(contactsZtoA).toEqual(sortedZtoA)
 })
