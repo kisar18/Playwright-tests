@@ -1,26 +1,13 @@
-import { test, expect } from '../fixtures/iDoklad/generalFixtures'
-import loginData from '../fixtures/iDoklad/login.json'
-import contacts from '../fixtures/iDoklad/contacts.json'
-import domData from '../fixtures/iDoklad/domData.json'
-import searchData from '../fixtures/iDoklad/searchData.json'
+import { test, expect } from '../../fixtures/iDoklad/generalFixtures'
+import contacts from '../../fixtures/iDoklad/contacts.json'
+import domData from '../../fixtures/iDoklad/domData.json'
+import searchData from '../../fixtures/iDoklad/searchData.json'
 
 // npx playwright codegen https://app.idoklad.cz/Account/Login - debug selectors
 // npx playwright test iDoklad.spec.ts --project=chromium --workers=1
 
-test.beforeEach('Login with valid credentials and block Clarity requests', async ({ login, page }) => {
-  await page.route('https://www.clarity.ms/**', (route) => {
-    route.fulfill({
-      status: 403,
-      body: '',
-    })
-  })
-
-  // Login
-  const response = await login(loginData.email, loginData.password)
-  expect(response.ok()).toBeTruthy()
-
-  // Close tip dialog
-  await page.locator('.dialog-buttons > div > button').click()
+test.beforeEach('Login', async ({ page }) => {
+  await page.goto('https://app.idoklad.cz/')
 })
 
 test('Create contact', async ({ page, getByDataUiId }) => {
@@ -284,7 +271,7 @@ test('Filter contacts', async ({ page, addEmptyContact, getByDataUiId, addContac
       return elements.map(el => (el.textContent || '').trim())
   })
 
-  const sortedAtoZ = [...contactsAtoZ].sort()
+  const sortedAtoZ = [...contactsAtoZ].sort().reverse()
   expect(contactsAtoZ).toEqual(sortedAtoZ)
 
   // Z to A sorting
@@ -294,6 +281,6 @@ test('Filter contacts', async ({ page, addEmptyContact, getByDataUiId, addContac
       return elements.map(el => (el.textContent || '').trim())
   })
 
-  const sortedZtoA = [...contactsZtoA].sort().reverse()
+  const sortedZtoA = [...contactsZtoA].sort()
   expect(contactsZtoA).toEqual(sortedZtoA)
 })

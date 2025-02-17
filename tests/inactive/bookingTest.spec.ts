@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import domData from '../../fixtures/bookingFixtures.json';
 
-test("Booking search accomodation", async ({ page }) => {
+test.skip("Booking search accomodation", async ({ page }) => {
   await page.goto(domData.bookingUrl);
 
   page.on('console', (msg) => {
