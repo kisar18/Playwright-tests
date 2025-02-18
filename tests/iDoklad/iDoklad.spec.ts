@@ -6,8 +6,49 @@ import searchData from '../../fixtures/iDoklad/searchData.json'
 // npx playwright codegen https://app.idoklad.cz/Account/Login - debug selectors
 // npx playwright test iDoklad.spec.ts --project=chromium --workers=1
 
-test.beforeEach('Login', async ({ page }) => {
+test.beforeEach(async ({ page, addEmptyContact }) => {
   await page.goto('https://app.idoklad.cz/')
+
+  await addEmptyContact(contacts[0])
+  await addEmptyContact(contacts[3])
+  await addEmptyContact(contacts[4])
+
+  await page.route('**/api/Dashboard/UnpaidInvoices**', route => {
+    route.continue()
+  })
+  const loadHomeRequest = page.waitForResponse('**/api/Dashboard/UnpaidInvoices**')
+  await page.locator('[data-ui-id="csw-side-menu-home"]').click()
+  await loadHomeRequest
+})
+
+test.afterEach(async ({ page }) => {
+  // Go to contacts list
+  await page.goto('https://app.idoklad.cz/', { timeout: 15000 })
+
+  await page.route('**/api/Contact/ReadAjax**', route => {
+    route.continue()
+  })
+  const loadContactsRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
+  await expect(page.locator('[data-ui-id="csw-side-menu-address-book"]')).toBeVisible()
+  await page.locator('[data-ui-id="csw-side-menu-address-book"]').click()
+  await loadContactsRequest
+
+  // Select all contacts
+  await expect(page.locator('thead[role="presentation"] > tr > th > input')).toBeVisible()
+  await page.locator('thead[role="presentation"] > tr > th > input').click()
+
+  // Click delete button
+  await expect(page.locator('[data-ui-id="csw-grid-delete"] > button')).toBeVisible()
+  await page.locator('[data-ui-id="csw-grid-delete"] > button').click()
+
+  // Confirm deletion
+  await page.route('**/api/Contact/ReadAjax**', route => {
+    route.continue()
+  })
+  const deleteContactsRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
+  await expect(page.locator('[data-ui-id="csw-dialog-confirm"]')).toBeVisible()
+  await page.locator('[data-ui-id="csw-dialog-confirm"]').click()
+  await deleteContactsRequest
 })
 
 test('Create contact', async ({ page, getByDataUiId }) => {
@@ -35,45 +76,34 @@ test('Create contact', async ({ page, getByDataUiId }) => {
 
   const countrySearch = page.locator('.k-list-filter')
   await expect(countrySearch).toBeVisible()
-  await countrySearch.type(contacts[0].countrySearchValue)
+  await countrySearch.type(contacts[2].countrySearchValue)
 
   const targetCountry = page.locator('ul[role="listbox"] li')
   await expect(targetCountry).toHaveCount(1)
-  await expect(targetCountry).toContainText(contacts[0].country)
+  await expect(targetCountry).toContainText(contacts[2].country)
   await targetCountry.click()
 
   const companyName = page.locator('[name="CompanyName"]')
   await expect(companyName).toBeVisible()
-  await companyName.fill(contacts[0].name)
+  await companyName.fill(contacts[2].name)
 
   const identificationNumber = page.locator('[name="IdentificationNumber"]')
   await expect(identificationNumber).toBeVisible()
-  await identificationNumber.fill(contacts[0].identificationNumber)
+  await identificationNumber.fill(contacts[2].identificationNumber)
 
-  // Check if there is same existing contact
-  const checkDupliciteIcoTimePromise = page.waitForResponse(
-    '**/api/Contact/CheckEmailDuplicity?contactEmail=&contactIn=' + contacts[0].identificationNumber + '&contactId=0'
-  )
   const saveContactTimePromise = page.waitForResponse('**/api/Contact/Create')
-
   await saveContact.click()
-  await checkDupliciteIcoTimePromise
-
-  const btnText = await saveContact.textContent()
-  if (btnText.trim() === domData.saveDuplicateContact) {
-    // Duplicate contact found
-    await saveContact.click()
-  }
-
   await saveContactTimePromise
 
   await expect(validations).not.toBeVisible()
-  const toastMessage = getByDataUiId('csw-toast-message')
-  await expect(toastMessage).toBeVisible()
-  await expect(toastMessage).toContainText(contacts[0].name)
+
+  const toastMessages = getByDataUiId('csw-toast-message')
+  const toastMessagesTexts = await toastMessages.allTextContents()
+  const containsExpectedText = toastMessagesTexts.some(text => text.includes(domData.contactAdded))
+  expect(containsExpectedText).toBeTruthy()
 })
 
-test('Edit the first contact', async ({ page, addEmptyContact, getByDataUiId }) => {
+test('Edit the first contact', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   await page.route('**/api/Contact/IndexData', route => {
     route.continue()
@@ -83,14 +113,6 @@ test('Edit the first contact', async ({ page, addEmptyContact, getByDataUiId }) 
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
-
-  // Check if there is atleast one existing contact
-  const body = page.locator('body')
-  const hasEmptyListButton = await body.locator('button[data-ui-id="csw-empty-list-new-item"]').count()
-
-  if (hasEmptyListButton > 0) {
-    await addEmptyContact(contacts[0])
-  }
 
   // Edit contact
   const contactsTable = page.locator('.k-grid-container > div > div > table[role="presentation"]')
@@ -115,7 +137,6 @@ test('Edit the first contact', async ({ page, addEmptyContact, getByDataUiId }) 
   await expect(targetCountry).toContainText(contacts[1].country)
   await targetCountry.click()
 
-
   const fillField = async (selector: string, value: string) => {
     const field = page.locator(selector)
     await expect(field).toBeVisible()
@@ -139,12 +160,14 @@ test('Edit the first contact', async ({ page, addEmptyContact, getByDataUiId }) 
 
   const errorsWrapper = page.locator('.errors-wrapper')
   await expect(errorsWrapper).not.toBeVisible()
-  const toastMessage = await getByDataUiId('csw-toast-message')
-  await expect(toastMessage).toBeVisible()
-  await expect(toastMessage).toContainText(domData.contactEdited)
+
+  const toastMessages = getByDataUiId('csw-toast-message')
+  const toastMessagesTexts = await toastMessages.allTextContents()
+  const containsExpectedText = toastMessagesTexts.some(text => text.includes(domData.contactEdited))
+  expect(containsExpectedText).toBeTruthy()
 })
 
-test('Delete first contact', async ({ page, addEmptyContact, getByDataUiId }) => {
+test('Delete first contact', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   await page.route('**/api/Contact/IndexData', route => {
     route.continue()
@@ -154,14 +177,6 @@ test('Delete first contact', async ({ page, addEmptyContact, getByDataUiId }) =>
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
-
-  // Check if there is at least one existing contact
-  const body = page.locator('body')
-  const hasEmptyListButton = await body.locator('button[data-ui-id="csw-empty-list-new-item"]').count()
-
-  if (hasEmptyListButton > 0) {
-    await addEmptyContact(contacts[0])
-  }
 
   // Delete contact
   const contactsTable = await page.locator('.k-grid-container > div > div > table[role="presentation"]')
@@ -178,43 +193,28 @@ test('Delete first contact', async ({ page, addEmptyContact, getByDataUiId }) =>
   await expect(deleteContact).toBeVisible()
   await deleteContact.click()
 
-  const deleteContactTime = page.waitForResponse('**/api/Contact/DeleteRecords')
-
+  const deleteContactTime = page.waitForResponse('**/api/Contact/ReadAjax**')
   const confirmDialog = await getByDataUiId('csw-dialog-confirm')
   await expect(confirmDialog).toBeVisible()
   await confirmDialog.click()
-
   await deleteContactTime
 
-  const toastMessage = await getByDataUiId('csw-toast-message')
-  await expect(toastMessage).toBeVisible()
-  await expect(toastMessage).toContainText(domData.contactDeleted)
+  const toastMessages = getByDataUiId('csw-toast-message')
+  const toastMessagesTexts = await toastMessages.allTextContents()
+  const containsExpectedText = toastMessagesTexts.some(text => text.includes(domData.contactDeleted))
+  expect(containsExpectedText).toBeTruthy()
 })
 
-test('Search contacts', async ({ page, addEmptyContact, getByDataUiId, addContactIfNotPresent }) => {
+test('Search contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   await page.route('**/api/Contact/IndexData', route => {
     route.continue()
   })
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
-  const readContactsPageTime = page.waitForResponse('**/api/Contact/ReadAjax**');
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
-
-  // Check if there is at least one existing contact
-  const body = page.locator('body')
-  const hasEmptyListButton = await body.locator('button[data-ui-id="csw-empty-list-new-item"]').count()
-
-  if (hasEmptyListButton > 0) {
-    await addEmptyContact(contacts[0])
-  }
-
-  await readContactsPageTime
-  await addContactIfNotPresent(contacts[0])
-  await addContactIfNotPresent(contacts[3])
-  await addContactIfNotPresent(contacts[4])
 
   const rows = page.locator('tr.k-master-row')
   await rows.first().waitFor({ state: 'visible' })
@@ -232,35 +232,19 @@ test('Search contacts', async ({ page, addEmptyContact, getByDataUiId, addContac
   const filteredRows = await page.locator('tr.k-master-row')
   const filteredRowCount = await filteredRows.count()
 
-  console.log(filteredRowCount)
-
   expect(filteredRowCount).toBeLessThan(allContactsLength)
 })
 
-test('Filter contacts', async ({ page, addEmptyContact, getByDataUiId, addContactIfNotPresent }) => {
+test('Filter contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   await page.route('**/api/Contact/IndexData', route => {
     route.continue()
   })
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
-  const readContactsPageTime = page.waitForResponse('**/api/Contact/ReadAjax**');
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
-
-  // Check if there is at least one existing contact
-  const body = page.locator('body')
-  const hasEmptyListButton = await body.locator('button[data-ui-id="csw-empty-list-new-item"]').count()
-
-  if (hasEmptyListButton > 0) {
-    await addEmptyContact(contacts[0])
-  }
-
-  await readContactsPageTime
-  await addContactIfNotPresent(contacts[0])
-  await addContactIfNotPresent(contacts[3])
-  await addContactIfNotPresent(contacts[4])
 
   // A to Z sorting
   const sortByName = await page.locator('th[aria-colindex="2"]')
