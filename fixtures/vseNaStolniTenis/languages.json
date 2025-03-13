@@ -1,0 +1,30 @@
+[
+  {
+    "name": "czech",
+    "title": "Výhradní dovozce BUTTERFLY - vše na stolní tenis.cz",
+    "url": "https://www.vsenastolnitenis.cz/",
+    "searchPlaceholder": "Zadejte hledaný výraz",
+    "flagAlt": "Česky"
+  },
+  {
+    "name": "english",
+    "title": "Welcome - all for table tennis.eu",
+    "url": "https://www.vsenastolnitenis.cz/en",
+    "searchPlaceholder": "Search",
+    "flagAlt": "English"
+  },
+  {
+    "name": "german",
+    "title": "Willkommen bei all for table tennis.eu - all for table tennis.eu",
+    "url": "https://www.vsenastolnitenis.cz/de",
+    "searchPlaceholder": "Suchen",
+    "flagAlt": "deutsch"
+  },
+  {
+    "name": "polish",
+    "title": "Witaj all for table tennis.eu - all for table tennis.eu",
+    "url": "https://www.vsenastolnitenis.cz/pl",
+    "searchPlaceholder": "Wpisz szukane słowo",
+    "flagAlt": "polish"
+  }
+]

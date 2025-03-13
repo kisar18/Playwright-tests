@@ -1,0 +1,59 @@
+{
+  "headerMenuItems": [
+    "Co nabízíme",
+    "Blog",
+    "Kontakt"
+  ],
+  "categories": [
+    "Akční nabídka",
+    "Stoly",
+    "Pálky",
+    "Míčky",
+    "Potahy",
+    "Dřeva",
+    "Textil",
+    "Boty",
+    "Vybavení pro kluby",
+    "Roboty",
+    "Doplňky",
+    "Bazar"
+  ],
+  "stores": [
+    {
+      "name": "E-shop - Praha",
+      "street": "Zenklova 413/215",
+      "city": "182 00 Praha 8",
+      "openingHours": "Po - pá 9 - 18, sobota 10 - 13"
+    },
+    {
+      "name": "Prodejna Praha",
+      "street": "Zenklova 413/215",
+      "city": "182 00 Praha 8",
+      "openingHours": "Po - pá 9 - 18, sobota 10 - 13"
+    },
+    {
+      "name": "Prodejna Ostrava",
+      "street": "28. října 108",
+      "city": "702 00 Ostrava",
+      "openingHours": "Po/St/Pá 9 - 17 Út/Čt 9 - 18"
+    },
+    {
+      "name": "Prodejna Olomouc",
+      "street": "Komenského 899/14",
+      "city": "779 00 Olomouc",
+      "openingHours": "Pondělí - pátek 8:30 - 16:30"
+    },
+    {
+      "name": "Prodejna Brno",
+      "street": "Cejl 88",
+      "city": "602 00 Brno",
+      "openingHours": "Pondělí - pátek 9 - 12:30 13 - 17"
+    },
+    {
+      "name": "Prodejna Louny",
+      "street": "Náměstí B. Rejta 2301",
+      "city": "440 01 Louny",
+      "openingHours": "Pondělí - pátek 13 - 17"
+    }
+  ]
+}

@@ -47,7 +47,7 @@ export default defineConfig({
     {
       name: 'others',
       use: { storageState: undefined },
-      testMatch: ['ryanairSignup.spec.ts'],
+      testMatch: ['ryanairSignup.spec.ts', 'vseNaStolniTenis.spec.ts'],
     },
 
     /* Test against mobile viewports. */

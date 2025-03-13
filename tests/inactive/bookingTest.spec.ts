@@ -1,18 +1,18 @@
-import { test, expect } from "@playwright/test";
-import domData from '../../fixtures/bookingFixtures.json';
+import { test, expect } from "@playwright/test"
+import domData from '../../fixtures/bookingFixtures.json'
 
 test.skip("Booking search accomodation", async ({ page }) => {
-  await page.goto(domData.bookingUrl);
+  await page.goto(domData.bookingUrl)
 
   page.on('console', (msg) => {
-    console.log(msg);
-  });
+    console.log(msg)
+  })
 
   // Decline cookies
-  await page.locator("#onetrust-reject-all-handler").click();
+  await page.locator("#onetrust-reject-all-handler").click()
 
   // Title check
-  await expect(page).toHaveTitle(domData.title);
+  await expect(page).toHaveTitle(domData.title)
 
   const destinationField = page.getByTestId('destination-container').locator('[name="ss"]')
   await expect(destinationField).toBeVisible()
