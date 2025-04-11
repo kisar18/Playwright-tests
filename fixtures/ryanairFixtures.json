@@ -4,5 +4,9 @@
   "declineCookies" : "Ne, děkuji",
   "requiredEmail": "Je třeba uvést e-mail",
   "requiredPassword": "Je vyžadováno heslo",
-  "invalidEmail": "Neplatný formát e-mailové adresy"
+  "invalidEmail": "Neplatný formát e-mailové adresy",
+  "portal": "Portál myRyanair",
+  "signUpBtn": "Registrovat",
+  "createAccountBtn": "Vytvořit účet",
+  "profileSectionHeader": " Vaše příští rezervace"
 }

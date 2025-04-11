@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test"
 import domData from '../fixtures/ryanairFixtures.json'
+import { createTempEmail, waitForEmail } from "../utils/emailUtils"
 
 /*
   Commands to run the tests:
@@ -29,10 +30,10 @@ test("Ryanair sign-up", async ({ page }) => {
   // Open sign-up window
   const iframe = page.frameLocator('iframe[data-ref="kyc-iframe"]')
   await iframe.locator('button[data-ref="signup_login_signup"]').click()
-  const createAccountBtn = iframe.locator('text=" Vytvořit účet "')
+  const createAccountBtn = iframe.getByRole('button', { name: 'Vytvořit účet' })
   await expect(createAccountBtn).toBeVisible()
-
-  // Empty fields
+  
+  // Check empty fields
   const emailValidation = iframe.locator('ry-input-d[name="email"] > span').first()
   const passwordValidation = iframe.locator('ry-input-d[name="password"] > span').first()
   await createAccountBtn.click()
@@ -41,7 +42,7 @@ test("Ryanair sign-up", async ({ page }) => {
   await expect(passwordValidation).toBeVisible()
   await expect(passwordValidation).toHaveText(domData.requiredPassword)
 
-  // Testing email field
+  // Email validation
   const emailField = iframe.locator('input[name="email"]')
   await emailField.fill("email")
   await createAccountBtn.click()
@@ -62,7 +63,7 @@ test("Ryanair sign-up", async ({ page }) => {
   await createAccountBtn.click()
   await expect(emailValidation).not.toBeVisible()
 
-  // Testing password field
+  // Password validation
   const passwordField = iframe.locator('input[name="password"]')
   await passwordField.fill("passwd")
   await createAccountBtn.click()
@@ -78,4 +79,45 @@ test("Ryanair sign-up", async ({ page }) => {
   await expect(eightCharactersValidation).toHaveClass('icon--error')
   await expect(oneSmallLetterValidation).toHaveClass('icon--success')
   await expect(oneBigLetterValidation).toHaveClass('icon--error')
+
+  // Create temp email and fill form
+  const { address, token } = await createTempEmail()
+  console.log(`Using email: ${address}`)
+
+  await emailField.fill(address)
+  await passwordField.fill("TestPassw0rd")
+  await createAccountBtn.click({ force: true })
+
+  const email = await waitForEmail(token);
+  const content = email.text || email.html;
+
+  if (!content) throw new Error('E-mail does not contain any HTML')
+
+  const codeRegex = /Your eight-digit security code is:\s*(\d{8})/i
+  const match = content.match(codeRegex)
+
+  if (!match || !match[1]) throw new Error('Verification code was not found in the e-mail')
+
+  const verificationCode = match[1]
+  console.log(`Verification code: ${verificationCode}`)
+
+  // Locate the iframe for email verification
+  const iframeLocator = page.locator('iframe[data-ref="kyc-iframe"]')
+  await expect(iframeLocator).toBeVisible({ timeout: 10000 })
+
+  const verficationIframe = iframeLocator.frameLocator('iframe[data-ref="kyc-iframe"]')
+
+  // Locate the input field and fill the verification code
+  const codeField = page.locator('iframe').contentFrame().getByRole('textbox')
+  await expect(codeField).toBeVisible()
+  await codeField.fill(verificationCode)
+
+  // Locate the continue button and click it
+  const continueButton = page.locator('iframe').contentFrame().getByRole('button', { name: 'Pokračovat' })
+  await expect(continueButton).toBeVisible()
+  await continueButton.click()
+
+  // Check that the profile section header is visible after verification
+  const logoutBtn = page.getByRole('button', { name: 'Odhlásit se' })
+  await expect(logoutBtn).toBeVisible()
 })
