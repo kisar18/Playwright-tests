@@ -2,11 +2,13 @@
   "ryanairUrl": "https://www.ryanair.com/cz/cs",
   "title": "Oficiální internetové stránky Ryanair | Levné lety | Exkluzivní nabídka",
   "declineCookies" : "Ne, děkuji",
+  "portal": "Portál myRyanair",
+  "loginBtn": "Přihlásit se",
+  "signUpBtn": "Registrovat",
+  "createAccountBtn": "Vytvořit účet",
   "requiredEmail": "Je třeba uvést e-mail",
   "requiredPassword": "Je vyžadováno heslo",
   "invalidEmail": "Neplatný formát e-mailové adresy",
-  "portal": "Portál myRyanair",
-  "signUpBtn": "Registrovat",
-  "createAccountBtn": "Vytvořit účet",
-  "profileSectionHeader": " Vaše příští rezervace"
+  "continueBtn": "Pokračovat",
+  "logoutBtn": "Odhlásit se"
 }

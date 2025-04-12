@@ -25,12 +25,12 @@ test("Ryanair sign-up", async ({ page }) => {
   // Title check
   await expect(page).toHaveTitle(domData.title)
 
-  await page.getByRole("button", { name: " Přihlásit se " }).click()
+  await page.getByRole("button", { name: domData.loginBtn }).click()
 
   // Open sign-up window
   const iframe = page.frameLocator('iframe[data-ref="kyc-iframe"]')
   await iframe.locator('button[data-ref="signup_login_signup"]').click()
-  const createAccountBtn = iframe.getByRole('button', { name: 'Vytvořit účet' })
+  const createAccountBtn = iframe.getByRole('button', { name: domData.createAccountBtn })
   await expect(createAccountBtn).toBeVisible()
   
   // Check empty fields
@@ -105,19 +105,17 @@ test("Ryanair sign-up", async ({ page }) => {
   const iframeLocator = page.locator('iframe[data-ref="kyc-iframe"]')
   await expect(iframeLocator).toBeVisible({ timeout: 10000 })
 
-  const verficationIframe = iframeLocator.frameLocator('iframe[data-ref="kyc-iframe"]')
-
   // Locate the input field and fill the verification code
   const codeField = page.locator('iframe').contentFrame().getByRole('textbox')
   await expect(codeField).toBeVisible()
   await codeField.fill(verificationCode)
 
   // Locate the continue button and click it
-  const continueButton = page.locator('iframe').contentFrame().getByRole('button', { name: 'Pokračovat' })
+  const continueButton = page.locator('iframe').contentFrame().getByRole('button', { name: domData.continueBtn })
   await expect(continueButton).toBeVisible()
   await continueButton.click()
 
   // Check that the profile section header is visible after verification
-  const logoutBtn = page.getByRole('button', { name: 'Odhlásit se' })
+  const logoutBtn = page.getByRole('button', { name: domData.logoutBtn })
   await expect(logoutBtn).toBeVisible()
 })
