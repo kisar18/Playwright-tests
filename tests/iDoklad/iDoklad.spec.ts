@@ -225,14 +225,20 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
   const searchField = await getByDataUiId('csw-grid-search')
   await expect(searchField).toBeVisible()
 
+  const searchTerm = searchData[0].input.toLowerCase()
   const searchRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
-  await searchField.fill(searchData[0].input)
+  await searchField.fill(searchTerm)
   await searchRequest
 
   const filteredRows = await page.locator('tr.k-master-row')
   const filteredRowCount = await filteredRows.count()
 
   expect(filteredRowCount).toBeLessThan(allContactsLength)
+
+  for (let i = 0; i < filteredRowCount; i++) {
+    const rowText = await filteredRows.nth(i).innerText()
+    expect(rowText.toLowerCase()).toContain(searchTerm)
+  }
 })
 
 test('Filter contacts', async ({ page, getByDataUiId }) => {
