@@ -22,9 +22,6 @@ test.afterEach(async ({ page }) => {
   // Go to contacts list
   await page.goto('https://app.idoklad.cz/', { timeout: 15000 })
 
-  await page.route('**/api/Contact/ReadAjax**', route => {
-    route.continue()
-  })
   const loadContactsRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
   await expect(page.locator('[data-ui-id="csw-side-menu-address-book"]')).toBeVisible()
   await page.locator('[data-ui-id="csw-side-menu-address-book"]').click()
@@ -39,9 +36,6 @@ test.afterEach(async ({ page }) => {
   await page.locator('[data-ui-id="csw-grid-delete"] > button').click()
 
   // Confirm deletion
-  await page.route('**/api/Contact/ReadAjax**', route => {
-    route.continue()
-  })
   const deleteContactsRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
   await expect(page.locator('[data-ui-id="csw-dialog-confirm"]')).toBeVisible()
   await page.locator('[data-ui-id="csw-dialog-confirm"]').click()
@@ -102,9 +96,6 @@ test('Create contact', async ({ page, getByDataUiId }) => {
 
 test('Edit the first contact', async ({ page, getByDataUiId }) => {
   // Go to contacts list
-  await page.route('**/api/Contact/IndexData', route => {
-    route.continue()
-  })
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
@@ -150,7 +141,6 @@ test('Edit the first contact', async ({ page, getByDataUiId }) => {
   // Save contact
   const saveContactButton = await getByDataUiId('csw-save-new-contact')
   await expect(saveContactButton).toBeVisible()
-  await page.route('**/api/Contact/Update', route => route.continue())
   const saveContactRequest = page.waitForResponse('**/api/Contact/Update')
   await saveContactButton.click()
   await saveContactRequest
@@ -166,9 +156,6 @@ test('Edit the first contact', async ({ page, getByDataUiId }) => {
 
 test('Delete first contact', async ({ page, getByDataUiId }) => {
   // Go to contacts list
-  await page.route('**/api/Contact/IndexData', route => {
-    route.continue()
-  })
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
@@ -238,7 +225,7 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
   }
 })
 
-test('Filter contacts', async ({ page, getByDataUiId }) => {
+test('Sort contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   await page.route('**/api/Contact/IndexData', route => {
     route.continue()
