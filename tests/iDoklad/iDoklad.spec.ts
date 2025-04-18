@@ -191,9 +191,6 @@ test('Delete first contact', async ({ page, getByDataUiId }) => {
 
 test('Search contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
-  await page.route('**/api/Contact/IndexData', route => {
-    route.continue()
-  })
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
@@ -227,9 +224,6 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
 
 test('Sort contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
-  await page.route('**/api/Contact/IndexData', route => {
-    route.continue()
-  })
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
