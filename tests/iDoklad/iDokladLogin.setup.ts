@@ -1,4 +1,4 @@
-import { test as setup, expect } from '../../fixtures/iDoklad/generalFixtures'
+import { test as setup, expect } from '../helpers/generalFixtures'
 import loginData from '../../fixtures/iDoklad/login.json'
 
 setup('authenticate', async ({ page, getByDataUiId }) => {

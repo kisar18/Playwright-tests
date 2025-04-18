@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/iDoklad/generalFixtures'
+import { test, expect } from '../helpers/generalFixtures'
 import contacts from '../../fixtures/iDoklad/contacts.json'
 import domData from '../../fixtures/iDoklad/domData.json'
 import searchData from '../../fixtures/iDoklad/searchData.json'
