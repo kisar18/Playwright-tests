@@ -13,9 +13,6 @@ test.beforeEach(async ({ page, addEmptyContact }) => {
   await addEmptyContact(contacts[3])
   await addEmptyContact(contacts[4])
 
-  await page.route('**/api/Dashboard/UnpaidInvoices**', route => {
-    route.continue()
-  })
   const loadHomeRequest = page.waitForResponse('**/api/Dashboard/UnpaidInvoices**')
   await page.locator('[data-ui-id="csw-side-menu-home"]').click()
   await loadHomeRequest
