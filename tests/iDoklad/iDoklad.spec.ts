@@ -42,7 +42,7 @@ test.afterEach(async ({ page }) => {
   await deleteContactsRequest
 })
 
-test('Create contact', async ({ page, getByDataUiId }) => {
+test('Create contact', async ({ page, getByDataUiId, fillField }) => {
 
   // Open new contact form
   await getByDataUiId('csw-new-item').click()
@@ -69,18 +69,13 @@ test('Create contact', async ({ page, getByDataUiId }) => {
   await expect(countrySearch).toBeVisible()
   await countrySearch.type(contacts[2].countrySearchValue)
 
-  const targetCountry = page.locator('ul[role="listbox"] li')
+  const targetCountry = page.locator('ul[role="listbox"] > li')
   await expect(targetCountry).toHaveCount(1)
   await expect(targetCountry).toContainText(contacts[2].country)
   await targetCountry.click()
 
-  const companyName = page.locator('[name="CompanyName"]')
-  await expect(companyName).toBeVisible()
-  await companyName.fill(contacts[2].name)
-
-  const identificationNumber = page.locator('[name="IdentificationNumber"]')
-  await expect(identificationNumber).toBeVisible()
-  await identificationNumber.fill(contacts[2].identificationNumber)
+  await fillField('[name="CompanyName"]', contacts[2].name)
+  await fillField('[name="IdentificationNumber"]', contacts[2].identificationNumber)
 
   const saveContactTimePromise = page.waitForResponse('**/api/Contact/Create')
   await saveContact.click()
@@ -94,7 +89,7 @@ test('Create contact', async ({ page, getByDataUiId }) => {
   expect(containsExpectedText).toBeTruthy()
 })
 
-test('Edit the first contact', async ({ page, getByDataUiId }) => {
+test('Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
@@ -124,13 +119,6 @@ test('Edit the first contact', async ({ page, getByDataUiId }) => {
   await expect(targetCountry).toHaveCount(1)
   await expect(targetCountry).toContainText(contacts[1].country)
   await targetCountry.click()
-
-  const fillField = async (selector: string, value: string) => {
-    const field = page.locator(selector)
-    await expect(field).toBeVisible()
-    await field.clear()
-    await field.fill(value)
-  }
 
   await fillField('[name="CompanyName"]', contacts[1].name)
   await fillField('[name="IdentificationNumber"]', contacts[1].identificationNumber)

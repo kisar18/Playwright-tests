@@ -45,6 +45,14 @@ export const test = baseTest.extend({
       const containsExpectedText = toastMessagesTexts.some(text => text.includes(contact.name))
       expect(containsExpectedText).toBeTruthy()
     })
+  },
+
+  fillField: async ({ page }, use) => {
+    await use(async (selector: string, value: string) => {
+      const field = page.locator(selector)
+      await expect(field).toBeVisible()
+      await field.fill(value)
+    })
   }
 })
 
