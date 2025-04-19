@@ -6,7 +6,7 @@ import searchData from '../../fixtures/iDoklad/searchData.json'
 // npx playwright codegen https://app.idoklad.cz/Account/Login - debug selectors
 // npx playwright test iDoklad.spec.ts --project=chromium --workers=1
 
-test.beforeEach(async ({ page, addEmptyContact }) => {
+test.beforeEach(async ({ page, addEmptyContact, getByDataUiId }) => {
   await page.goto('https://app.idoklad.cz/')
 
   await addEmptyContact(contacts[0])
@@ -14,7 +14,7 @@ test.beforeEach(async ({ page, addEmptyContact }) => {
   await addEmptyContact(contacts[4])
 
   const loadHomeRequest = page.waitForResponse('**/api/Dashboard/UnpaidInvoices**')
-  await page.locator('[data-ui-id="csw-side-menu-home"]').click()
+  await getByDataUiId('csw-side-menu-home').click()
   await loadHomeRequest
 })
 
@@ -65,9 +65,9 @@ test('Create contact', async ({ page, getByDataUiId, fillField }) => {
   await expect(countryButton).toBeVisible()
   await countryButton.click()
 
-  const countrySearch = page.locator('.k-list-filter')
+  const countrySearch = page.locator('.k-list-filter > span > .k-input-inner')
   await expect(countrySearch).toBeVisible()
-  await countrySearch.type(contacts[2].countrySearchValue)
+  await countrySearch.fill(contacts[2].countrySearchValue)
 
   const targetCountry = page.locator('ul[role="listbox"] > li')
   await expect(targetCountry).toHaveCount(1)

@@ -15,7 +15,7 @@ export const test = baseTest.extend({
     await use(getByDataUiId)
   },
 
-  addEmptyContact: async ({ page, getByDataUiId }, use) => {
+  addEmptyContact: async ({ page, getByDataUiId, fillField }, use) => {
     await use(async (contact: Contact) => {
       await getByDataUiId('csw-new-item').click()
       const createContactButton = getByDataUiId('csw-new-item-contact');
@@ -25,9 +25,7 @@ export const test = baseTest.extend({
       await expect(sectionTitle).toBeVisible()
       await expect(sectionTitle).toHaveText('Nový kontakt')
 
-      const companyNameInput = page.locator('[name="CompanyName"]')
-      await expect(companyNameInput).toBeVisible()
-      await companyNameInput.fill(contact.name)
+      await fillField('[name="CompanyName"]', contact.name)
 
       const saveContactButton = getByDataUiId('csw-save-new-contact')
       await expect(saveContactButton).toBeVisible()
