@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
 import domData from '../fixtures/ryanairFixtures.json'
-import { createTempEmail, waitForEmail } from "../utils/emailUtils"
+import { createTempEmail, waitForEmail } from "./helpers/emailUtils"
 
 /*
   Commands to run the tests:
