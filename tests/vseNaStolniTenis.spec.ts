@@ -53,12 +53,30 @@ test('Filter tables by brand', async ({ page }) => {
   await page.locator('#catmenu1', { hasText: domData.categories[1] }).click()
   await loadCategoryTime
 
+  let productTitles: string[]
+
+  // Brand 1
   const firstBrand = page.locator('div[data-name="znacka"] > div > ul > li', { hasText: tables[0].brand })
   await expect(firstBrand).toBeVisible()
   await firstBrand.click()
-
-  const productTitles = await page.locator('.pp-cat-item > a > .pp-pbody > .pp-titlebox').allTextContents()
+  productTitles = await page.locator('.pp-cat-item > a > .pp-pbody > .pp-titlebox').allTextContents()
   productTitles.forEach(title => expect(title).toContain(tables[0].brand))
+
+  // Brand 2
+  await firstBrand.click()
+  const secondBrand = page.locator('div[data-name="znacka"] > div > ul > li', { hasText: tables[1].brand })
+  await expect(secondBrand).toBeVisible()
+  await secondBrand.click()
+  productTitles = await page.locator('.pp-cat-item > a > .pp-pbody > .pp-titlebox').allTextContents()
+  productTitles.forEach(title => expect(title).toContain(tables[1].brand))
+
+  // Brand 3
+  await secondBrand.click()
+  const thirdBrand = page.locator('div[data-name="znacka"] > div > ul > li', { hasText: tables[2].brand })
+  await expect(thirdBrand).toBeVisible()
+  await thirdBrand.click()
+  productTitles = await page.locator('.pp-cat-item > a > .pp-pbody > .pp-titlebox').allTextContents()
+  productTitles.forEach(title => expect(title).toContain(tables[2].brand))
 })
 
 test('Check contact info of all stores', async ({ page }) => {
