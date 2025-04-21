@@ -90,7 +90,7 @@ test('Check contact info of all stores', async ({ page }) => {
   await page.waitForSelector('.pp-blog-item', { state: 'visible' })
   const stores = await page.locator('.pp-blog-item')
   const storeCount = await stores.count()
-  expect(storeCount).toBe(6)
+  expect(storeCount).toBe(domData.stores.length)
 
   // Check the info of each store
   for (let index = 0; index < storeCount; index++) {
