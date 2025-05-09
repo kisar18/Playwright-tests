@@ -3,11 +3,16 @@ import contacts from '../../fixtures/iDoklad/contacts.json'
 import domData from '../../fixtures/iDoklad/domData.json'
 import searchData from '../../fixtures/iDoklad/searchData.json'
 
-// npx playwright codegen https://app.idoklad.cz/Account/Login - debug selectors
-// npx playwright test iDoklad.spec.ts --project=chromium --workers=1
-
 test.beforeEach(async ({ page, addEmptyContact, getByDataUiId }) => {
-  await page.goto('https://app.idoklad.cz/')
+  await page.route('https://www.clarity.ms/**', route => {
+    route.fulfill({
+      status: 403,
+      contentType: 'text/plain',
+      body: 'Forbidden',
+    })
+  })
+
+  await page.goto('https://app.idoklad.cz/', { timeout: 60000 })
 
   await addEmptyContact(contacts[0])
   await addEmptyContact(contacts[3])
@@ -18,13 +23,14 @@ test.beforeEach(async ({ page, addEmptyContact, getByDataUiId }) => {
   await loadHomeRequest
 })
 
-test.afterEach(async ({ page }) => {
+test.afterEach(async ({ page, getByDataUiId }) => {
   // Go to contacts list
   await page.goto('https://app.idoklad.cz/', { timeout: 15000 })
 
   const loadContactsRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
-  await expect(page.locator('[data-ui-id="csw-side-menu-address-book"]')).toBeVisible()
-  await page.locator('[data-ui-id="csw-side-menu-address-book"]').click()
+  const addressBook = getByDataUiId("csw-side-menu-address-book")
+  await expect(addressBook).toBeVisible()
+  await addressBook.click()
   await loadContactsRequest
 
   // Select all contacts
@@ -37,8 +43,9 @@ test.afterEach(async ({ page }) => {
 
   // Confirm deletion
   const deleteContactsRequest = page.waitForResponse('**/api/Contact/ReadAjax**')
-  await expect(page.locator('[data-ui-id="csw-dialog-confirm"]')).toBeVisible()
-  await page.locator('[data-ui-id="csw-dialog-confirm"]').click()
+  const confirmDeletion = getByDataUiId("csw-dialog-confirm")
+  await expect(confirmDeletion).toBeVisible()
+  await confirmDeletion.click()
   await deleteContactsRequest
 })
 
@@ -46,7 +53,7 @@ test('Create contact', async ({ page, getByDataUiId, fillField }) => {
 
   // Open new contact form
   await getByDataUiId('csw-new-item').click()
-  const createContact = await getByDataUiId('csw-new-item-contact')
+  const createContact = getByDataUiId('csw-new-item-contact')
   await expect(createContact).toBeVisible()
   await createContact.click()
 
@@ -103,7 +110,7 @@ test('Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
   const selectedContact = contactsTable.locator('tr').first()
   await expect(selectedContact).toBeVisible()
 
-  const editButton = await selectedContact.locator('[data-ui-id="csw-row-action-edit"]')
+  const editButton = selectedContact.locator('[data-ui-id="csw-row-action-edit"]')
   await expect(editButton).toBeVisible()
   await editButton.click()
 
@@ -127,7 +134,7 @@ test('Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
   await fillField('[name="City"]', contacts[1].city)
 
   // Save contact
-  const saveContactButton = await getByDataUiId('csw-save-new-contact')
+  const saveContactButton = getByDataUiId('csw-save-new-contact')
   await expect(saveContactButton).toBeVisible()
   const saveContactRequest = page.waitForResponse('**/api/Contact/Update')
   await saveContactButton.click()
@@ -145,13 +152,13 @@ test('Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
 test('Delete first contact', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
-  const sideMenu = await getByDataUiId('csw-side-menu-address-book')
+  const sideMenu = getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
 
   // Delete contact
-  const contactsTable = await page.locator('.k-grid-container > div > div > table[role="presentation"]')
+  const contactsTable = page.locator('.k-grid-container > div > div > table[role="presentation"]')
   await expect(contactsTable).toBeVisible()
 
   const selectedContact = contactsTable.locator('tr').first()
@@ -161,12 +168,12 @@ test('Delete first contact', async ({ page, getByDataUiId }) => {
   await expect(moreActions).toBeVisible()
   await moreActions.click()
 
-  const deleteContact = await getByDataUiId('csw-row-action-delete')
+  const deleteContact = getByDataUiId('csw-row-action-delete')
   await expect(deleteContact).toBeVisible()
   await deleteContact.click()
 
   const deleteContactTime = page.waitForResponse('**/api/Contact/ReadAjax**')
-  const confirmDialog = await getByDataUiId('csw-dialog-confirm')
+  const confirmDialog = getByDataUiId('csw-dialog-confirm')
   await expect(confirmDialog).toBeVisible()
   await confirmDialog.click()
   await deleteContactTime
@@ -180,7 +187,7 @@ test('Delete first contact', async ({ page, getByDataUiId }) => {
 test('Search contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
-  const sideMenu = await getByDataUiId('csw-side-menu-address-book')
+  const sideMenu = getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
@@ -191,7 +198,7 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
   console.log(allContactsLength)
 
   // Searching
-  const searchField = await getByDataUiId('csw-grid-search')
+  const searchField = getByDataUiId('csw-grid-search')
   await expect(searchField).toBeVisible()
 
   const searchTerm = searchData[0].input.toLowerCase()
@@ -199,7 +206,7 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
   await searchField.fill(searchTerm)
   await searchRequest
 
-  const filteredRows = await page.locator('tr.k-master-row')
+  const filteredRows = page.locator('tr.k-master-row')
   const filteredRowCount = await filteredRows.count()
 
   expect(filteredRowCount).toBeLessThan(allContactsLength)
@@ -213,13 +220,13 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
 test('Sort contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
-  const sideMenu = await getByDataUiId('csw-side-menu-address-book')
+  const sideMenu = getByDataUiId('csw-side-menu-address-book')
   await expect(sideMenu).toBeVisible()
   await sideMenu.click()
   await contactsPageLoad
 
   // A to Z sorting
-  const sortByName = await page.locator('th[aria-colindex="2"]')
+  const sortByName = page.locator('th[aria-colindex="2"]')
   await expect(sortByName).toBeVisible()
   await sortByName.click()
 

@@ -17,8 +17,10 @@ export const test = baseTest.extend({
 
   addEmptyContact: async ({ page, getByDataUiId, fillField }, use) => {
     await use(async (contact: Contact) => {
-      await getByDataUiId('csw-new-item').click()
-      const createContactButton = getByDataUiId('csw-new-item-contact');
+      const addMenu = getByDataUiId('csw-new-item')
+      await expect(addMenu).toBeVisible()
+      await addMenu.click()
+      const createContactButton = getByDataUiId('csw-new-item-contact')
       await expect(createContactButton).toBeVisible()
       await createContactButton.click()
       const sectionTitle = page.locator('.heading-wrapper h1')

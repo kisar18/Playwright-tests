@@ -2,20 +2,6 @@ import { test, expect } from "@playwright/test"
 import domData from '../fixtures/ryanairFixtures.json'
 import { createTempEmail, waitForEmail } from "./helpers/emailUtils"
 
-/*
-  Commands to run the tests:
-  npx playwright test (runs all the tests in all the browsers)
-  npx playwright test --ui (runs tests in ui mode in all the browsers)
-  npx playwright test --project webkit (runs tests in a specific browser)
-  npx playwright test ryanairLogin.spec.ts --project chromium (runs a specific test in specific browser)
-
-  Pořešit:
-  - Fixtures
-  - Aliasy
-  - Custom commandy
-  - Zjednodušit selektory (cy.find() nebo cy.parent()) ???
-*/
-
 test("Ryanair sign-up", async ({ page }) => {
   await page.goto(domData.ryanairUrl)
 
