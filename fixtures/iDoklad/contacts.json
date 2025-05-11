@@ -43,5 +43,95 @@
     "city": "Tanger",
     "street": "Rue Annidal",
     "postalCode": 90040
+  },
+  {
+    "countrySearchValue": "itál",
+    "country": "Itálie",
+    "name": "Bella Ciao",
+    "identificationNumber": "3708282",
+    "city": "Napoli",
+    "street": "Corso Italia",
+    "postalCode": "20100"
+  },
+  {
+    "countrySearchValue": "portu",
+    "country": "Portugalsko",
+    "name": "Porto Wine",
+    "identificationNumber": "179332",
+    "city": "Porto",
+    "street": "Avenida Aliados",
+    "postalCode": "3000"
+  },
+  {
+    "countrySearchValue": "ture",
+    "country": "Turecko",
+    "name": "Istanbul Kebab",
+    "identificationNumber": "1648537",
+    "city": "Izmir",
+    "street": "Ataturk",
+    "postalCode": "06000"
+  },
+  {
+    "countrySearchValue": "pols",
+    "country": "Polsko",
+    "name": "Polski Pierogi",
+    "identificationNumber": "5879749",
+    "city": "Krakow",
+    "street": "Dluga",
+    "postalCode": "31001"
+  },
+  {
+    "countrySearchValue": "belg",
+    "country": "Belgie",
+    "name": "Belgian Waffle",
+    "identificationNumber": "3037356",
+    "city": "Antverpy",
+    "street": "Meir",
+    "postalCode": "1000"
+  },
+  {
+    "countrySearchValue": "srb",
+    "country": "Srbsko",
+    "name": "Serbian Pljeskavica",
+    "identificationNumber": "7581459",
+    "city": "Beograd",
+    "street": "Obrenoviceva",
+    "postalCode": "21000"
+  },
+  {
+    "countrySearchValue": "bul",
+    "country": "Bulharsko",
+    "name": "Bulgarian Banitsa",
+    "identificationNumber": "5986214",
+    "city": "Varna",
+    "street": "Vitosha",
+    "postalCode": "1000"
+  },
+  {
+    "countrySearchValue": "ukr",
+    "country": "Ukrajina",
+    "name": "Kyiv Cake",
+    "identificationNumber": "2937858",
+    "city": "Odessa",
+    "street": "Deribasivska",
+    "postalCode": "79000"
+  },
+  {
+    "countrySearchValue": "slovi",
+    "country": "Slovinsko",
+    "name": "Ljubljana Dragon",
+    "identificationNumber": "4321507",
+    "city": "Ljubljana",
+    "street": "Gosposvetska",
+    "postalCode": "1000"
+  },
+  {
+    "countrySearchValue": "alb",
+    "country": "Albánie",
+    "name": "Albanian Byrek",
+    "identificationNumber": "508250",
+    "city": "Shkoder",
+    "street": "Bulevardi Dyrrah",
+    "postalCode": "4001"
   }
 ]
