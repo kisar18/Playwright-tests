@@ -49,7 +49,7 @@ test.afterEach(async ({ page, getByDataUiId }) => {
   await deleteContactsRequest
 })
 
-test('Create contact', async ({ page, getByDataUiId, fillField }) => {
+test('TC_01_01 - Create contact', async ({ page, getByDataUiId, fillField }) => {
 
   // Open new contact form
   await getByDataUiId('csw-new-item').click()
@@ -96,7 +96,7 @@ test('Create contact', async ({ page, getByDataUiId, fillField }) => {
   expect(containsExpectedText).toBeTruthy()
 })
 
-test('Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
+test('TC_01_02 - Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = await getByDataUiId('csw-side-menu-address-book')
@@ -149,7 +149,7 @@ test('Edit the first contact', async ({ page, getByDataUiId, fillField }) => {
   expect(containsExpectedText).toBeTruthy()
 })
 
-test('Delete first contact', async ({ page, getByDataUiId }) => {
+test('TC_01_03 - Delete first contact', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = getByDataUiId('csw-side-menu-address-book')
@@ -184,7 +184,7 @@ test('Delete first contact', async ({ page, getByDataUiId }) => {
   expect(containsExpectedText).toBeTruthy()
 })
 
-test('Search contacts', async ({ page, getByDataUiId }) => {
+test('TC_01_04 - Search contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = getByDataUiId('csw-side-menu-address-book')
@@ -217,7 +217,7 @@ test('Search contacts', async ({ page, getByDataUiId }) => {
   }
 })
 
-test('Sort contacts', async ({ page, getByDataUiId }) => {
+test('TC_01_05 - Sort contacts', async ({ page, getByDataUiId }) => {
   // Go to contacts list
   const contactsPageLoad = page.waitForResponse('**/api/Contact/IndexData')
   const sideMenu = getByDataUiId('csw-side-menu-address-book')
